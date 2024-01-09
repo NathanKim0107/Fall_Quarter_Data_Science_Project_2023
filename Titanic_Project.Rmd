@@ -1,0 +1,78 @@
+---
+title: "Titanic Data Project"
+author: "Nathan Kim"
+date: "2023-12-29"
+output: pdf_document
+---
+```{r Survival or DEATH}
+library(readr)
+
+train <- read_csv("train.csv")
+test <- read_csv("test.csv")
+
+## Create factors for our datasets
+
+train$Survived <- factor(train$Survived)
+train$Pclass <- factor(train$Pclass)
+train$Name <- factor(train$Name)
+train$Sex <- factor(train$Sex)
+train$Ticket <- factor(train$Ticket)
+train$Embarked <- factor(train$Embarked)
+train$Pclass<-factor(train$Pclass)
+
+test$Pclass <- factor(test$Pclass)
+test$Name <- factor(test$Name)
+test$Sex <- factor(test$Sex)
+test$Ticket <- factor(test$Ticket)
+test$Embarked <- factor(test$Embarked)
+test$Pclass<-factor(test$Pclass)
+```
+
+
+```{r mice}
+# Impute the NA values with mice function
+library(randomForest)
+library(mice)
+
+# focus on the numerical columns in our coding
+train_temp <- train[,c(-1,-4,-5,-11,-12)]
+test_temp <-test[,c(1,3,4,5,7)]
+
+# impute with mice variable
+embarked <- mice(train_temp,m=5,maxit=5,meth='pmm',seed=10) ## mice is only numerical variables
+embarked2 <- mice(test_temp,m=5,maxit=5,meth='pmm',seed=10)
+
+train_temp <- complete(embarked,5)
+test_temp<-complete(embarked2,5)
+
+train$Age <- train_temp$Age
+test$Age=test_temp$Age
+
+
+# determine important variables from our mode
+model <- randomForest(Survived~.,data=train)
+importance(model) #sex, fare, and age are important predictors
+
+# update variables we want to keep for our final model based on importance
+train <- train[,c(-1,-4,-9,-11,-12)]
+sum(is.na(train))
+
+```
+
+
+```{r glm}
+library(MASS)
+library(ISLR)
+set.seed(10001)
+
+## utilize llogistic regression for function
+glm_model <- glm(factor(Survived)~.,data=train,family=binomial())
+glm_predict=predict(glm_model,newdata=test,type="response")
+
+pred_test <- rep(0,418)
+pred_test[glm_predict>0.5]=1
+
+write.csv(data.frame(PassengerID=892:1309,Survived=pred_test),
+  "C:\\Users\\natha\\OneDrive\\Documents\\survivalprediction.csv",row.names = FALSE)
+```
+
