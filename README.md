@@ -11,3 +11,6 @@ This Kaggle competition provides users with a Titanic database of passengers who
 
 # Result:
 - 77.3% Accuracy Score from Kaggle
+
+# Competition Link:
+- https://www.kaggle.com/competitions/titanic/overview
