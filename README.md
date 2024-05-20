@@ -1,4 +1,4 @@
-# Fall_Quarter_Data_Project_Project_2023
+# Fall_Quarter_Data_Project_2023
 Upload R coding for Kaggle Titanic Survival Competition
 
 This Kaggle competition provides users with a Titanic database of passengers who survived or passed away during their travel along with demographics and ticketing information of the passengers. The goal is to predict the status of a passenger's survival utilizing the training dataset.
